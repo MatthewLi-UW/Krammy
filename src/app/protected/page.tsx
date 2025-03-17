@@ -4,13 +4,15 @@ import { supabase } from "@/utils/supabase/client";
 import { InfoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User } from "@/types/User";
+import { User } from "@/types/user";
 import { flashcards } from "../game/flashcard_array";
 import { createDeck, sendData } from "@/utils/sendData";
 import { Deck } from "@/types/Deck";
 import { FlashCard } from "@/types/FlashCard";
 import { getADeck, getData } from "@/utils/getData";
 import { signOutAction } from "../actions";
+import ShareDeckForm from "./recievePage";
+import RecieveDeckForm from "./sharePage";
 
 export default function ProtectedPage() {
   const [loading, setLoading] = useState(true);
@@ -70,7 +72,7 @@ export default function ProtectedPage() {
         //We only want the ids for link
         const ArrayofCardID = (await cards).map(item => item.card_id);
 
-        //Crate the CardsToDeck object to prepare for upload
+        //Create the CardsToDeck object to prepare for upload
         const ConnectedCards = ArrayofCardID.map(card_id => ({
           card_id, 
           owner_id: user.id, 
@@ -116,21 +118,18 @@ export default function ProtectedPage() {
         <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
           {JSON.stringify(user, null, 2)}
         </pre>
+        <h2 className="font-bold text-2xl mb-4">Your decks (refresh to update)</h2>
         <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
           {JSON.stringify(deckList, null, 2)}
         </pre>
         <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
+        <h2 className="font-bold text-2xl mb-4">Your cards from deck (enter deck id below and click get)</h2>
           {JSON.stringify(cardsList, null, 2)}
         </pre>
         <button onClick={testupload} id="testupload" className="w-full px-4 py-3 bg-[#B65F3C] text-white rounded-lg hover:bg-[#A35432] transition-colors">
-                      upload
+                      upload (from flashcards file)
                     </button>
-                    <button onClick={testget} id="testget" className="w-full px-4 py-3 bg-[#B65F3C] text-white rounded-lg hover:bg-[#A35432] transition-colors">
-                      get
-                    </button>
-                    <button onClick={signOutAction} id="SignOut" data-testid="SignOutButton" className="w-full px-4 py-3 bg-[#B65F3C] text-white rounded-lg hover:bg-[#A35432] transition-colors">
-                      Sign Out
-                    </button>
+
                           <input
         type="number"
         id="inputField"
@@ -138,8 +137,18 @@ export default function ProtectedPage() {
         onChange={handleInputChange} 
         className="border p-2 rounded"
       />
+                          <button onClick={testget} id="testget" className="w-full px-4 py-3 bg-[#B65F3C] text-white rounded-lg hover:bg-[#A35432] transition-colors">
+                      get (enter deckid above, refresh page to refresh the deck list)
+                    </button>
+                    <button onClick={signOutAction} id="SignOut" data-testid="SignOutButton" className="w-full px-4 py-3 bg-[#B65F3C] text-white rounded-lg hover:bg-[#A35432] transition-colors">
+                      Sign Out
+                    </button>
       </div>
       <div>
+      </div>
+      <div className="mt-8">
+        <RecieveDeckForm />
+        <ShareDeckForm uuid={user?.id ??  ""} />
       </div>
     </div>
   );
